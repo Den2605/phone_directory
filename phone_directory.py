@@ -14,18 +14,37 @@ def load_contacts(filename: str) -> List[List[str]]:
             return contacts
 
 
-def display_contacts(contacts: List[List[str]]) -> None:
+def display_contacts(contacts: List[List[str]], page_size=3) -> None:
     """Вывод контактов в консоль."""
     if contacts:
-        headers: List[str] = [
-            "Фамилия",
-            "Имя",
-            "Отчество",
-            "Организация",
-            "Личный телефон",
-            "Рабочий телефон",
-        ]
-        print(tabulate(contacts, headers=headers))
+        total_contacts = len(contacts)
+        # округление вверх при делении
+        total_pages = -(-total_contacts // page_size)
+        page_number = 1
+        start_index = (page_number - 1) * page_size
+        end_index = page_number * page_size
+        while page_number <= total_pages:
+            print(f"Страница {page_number} из {total_pages}")
+            headers: List[str] = [
+                "Фамилия",
+                "Имя",
+                "Отчество",
+                "Организация",
+                "Личный телефон",
+                "Рабочий телефон",
+            ]
+            print(tabulate(contacts[start_index:end_index], headers=headers))
+            choice = input(
+                "1. Показать следующую страницу, 2. Вернуться в главное меню: "
+            )
+            if choice == "1":
+                page_number += 1
+                start_index = (page_number - 1) * page_size
+                end_index = page_number * page_size
+            elif choice == "2":
+                break
+            else:
+                print("Некорректный ввод. Пожалуйста, выберите 1 или 2.")
     else:
         print("Данных нет.")
 
@@ -45,7 +64,7 @@ def name_input(name: str) -> str:
 def phone_input(type_phone: str) -> str:
     """Проверка ввода телефонного номера."""
     while True:
-        phone: str = input(f"Введите {type_phone} : ").strip()
+        phone: str = input(f"Введите {type_phone} телефон: ").strip()
         if phone.isdigit():
             return phone
         else:
